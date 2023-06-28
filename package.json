@@ -1,0 +1,16 @@
+{
+  "name": "metamask-cosmos-demo",
+  "version": "0.0.0",
+  "author": "Larry Lyu <gm@larry.engineer>",
+  "license": "Apache-2.0 OR MIT",
+  "scripts": {
+    "build": "rm -rfv dist && npx parcel build src/index.html",
+    "serve": "npx parcel src/index.html"
+  },
+  "devDependencies": {
+    "parcel": "^2.9.3"
+  },
+  "engines": {
+    "node": "^18"
+  }
+}
