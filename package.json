@@ -10,8 +10,8 @@
   "dependencies": {
     "@cosmjs/stargate": "^0.31.0",
     "bech32": "^2.0.0",
-    "cosmjs-types": "^0.8.0",
-    "long": "^5.2.3"
+    "bn.js": "^5.2.1",
+    "cosmjs-types": "^0.8.0"
   },
   "devDependencies": {
     "buffer": "^6.0.3",

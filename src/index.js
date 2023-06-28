@@ -4,7 +4,7 @@ import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { AuthInfo, SignDoc, SignerInfo, Tx, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { bech32 } from "bech32";
-import Long from "long";
+import BN from "bn.js"
 
 const fromAddrInput = document.getElementById("fromAddr");
 const toAddrInput = document.getElementById("toAddr");
@@ -111,8 +111,8 @@ submitBtn.addEventListener("click", async function (event) {
   const v = sigBytes[64];
 
   const cred = {
-    r: Long.fromBytesBE(v, true).toString(),
-    s: Long.fromBytesBE(s, true).toString(),
+    r: new BN(r, 32, "be").toString(),
+    s: new BN(s, 32, "be").toString(),
     v,
   };
 
