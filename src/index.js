@@ -14,6 +14,7 @@ const chainIdInput = document.getElementById("chainId");
 const sequenceInput = document.getElementById("sequence");
 const accountNumberInput = document.getElementById("accountNumber");
 const submitBtn = document.getElementById("submitBtn");
+const resultDiv = document.getElementById("result");
 
 const rpcEndpoint = "http://127.0.0.1:26657";
 
@@ -39,6 +40,8 @@ function decodeHex(hex) {
 
 submitBtn.addEventListener("click", async function (event) {
   event.preventDefault();
+
+  resultDiv.innerHTML = "";
 
   const fromAddress = fromAddrInput.value;
   const fromAddrBytes = addressBytesFromBech32(fromAddress);
@@ -126,8 +129,8 @@ submitBtn.addEventListener("click", async function (event) {
 
   try {
     const txhash = await client.broadcastTxSync(Tx.encode(tx).finish());
-    console.log("tx broadcasted! txhash:", txhash);
+    resultDiv.innerHTML = txhash;
   } catch (err) {
-    console.log("tx failed!", err.toString());
+    resultDiv.innerHTML = err.toString();
   }
 });
