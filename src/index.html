@@ -5,6 +5,37 @@
     <title>metamask-cosmos-demo</title>
   </head>
   <body>
-    <script src="index.ts"></script>
+    <label for="fromAddr">from address:</label>
+    <br />
+    <input type="text" id="fromAddr" name="fromAddr" size="75" value="cosmos13eragasac9vncqy27hje5zlrep2kyjl3782tlt3kgc20hpxm8emsrdadtd"/>
+    <br />
+    <label for="toAddr">to address:</label>
+    <br />
+    <input type="text" id="toAddr" name="toAddr" size="75" value="cosmos1qskahqekuvwmyqgmusfdlg62eptczc4rd05mc2"/>
+    <br />
+    <label for="denom">denom:</label>
+    <br />
+    <input type="text" id="denom" name="denom" size="75" value="token"/>
+    <br />
+    <label for="amount">amount:</label>
+    <br />
+    <input type="text" id="amount" name="amount" size="75" value="12345"/>
+    <br />
+    <br />
+    <label for="chainId">chain ID:</label>
+    <br />
+    <input type="text" id="chainId" name="chainId" size="75" value="dev-1"/>
+    <br />
+    <label for="sequence">sequence:</label>
+    <br />
+    <input type="text" id="sequence" name="sequence" size="75" value="1"/>
+    <br />
+    <label for="accountNumber">account number:</label>
+    <br />
+    <input type="text" id="accountNumber" name="accountNumber" size="75" value="2"/>
+    <br />
+    <br />
+    <button type="submit" id="submitBtn">Sign and broadcast</button>
+    <script type="module" src="index.ts"></script>
   </body>
 </html>
