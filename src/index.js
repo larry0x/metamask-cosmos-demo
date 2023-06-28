@@ -4,7 +4,6 @@ import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { AuthInfo, SignDoc, SignerInfo, Tx, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { bech32 } from "bech32";
-import BN from "bn.js"
 
 const fromAddrInput = document.getElementById("fromAddr");
 const toAddrInput = document.getElementById("toAddr");
@@ -46,11 +45,6 @@ submitBtn.addEventListener("click", async function (event) {
   const fromAddress = fromAddrInput.value;
   const fromAddrBytes = addressBytesFromBech32(fromAddress);
 
-  const publicKey = {
-    typeUrl: "/larry.abstractaccount.v1.NilPubKey",
-    value: new Uint8Array([10, 32, ...fromAddrBytes]), // a little hack to encode the pk into proto bytes
-  };
-
   const msg = MsgSend.fromPartial({
     fromAddress,
     toAddress: toAddrInput.value,
@@ -74,7 +68,10 @@ submitBtn.addEventListener("click", async function (event) {
   const authInfo = AuthInfo.fromPartial({
     signerInfos: [
       SignerInfo.fromPartial({
-        publicKey,
+        publicKey: {
+          typeUrl: "/larry.abstractaccount.v1.NilPubKey",
+          value: new Uint8Array([10, 32, ...fromAddrBytes]), // a little hack to encode the pk into proto bytes
+        },
         modeInfo: {
           single: {
             mode: SignMode.SIGN_MODE_DIRECT,
@@ -89,45 +86,35 @@ submitBtn.addEventListener("click", async function (event) {
     },
   });
 
+  // prepare sign bytes
   const signDoc = SignDoc.fromPartial({
     bodyBytes: TxBody.encode(body).finish(),
     authInfoBytes: AuthInfo.encode(authInfo).finish(),
     chainId: chainIdInput.value,
     accountNumber: accountNumberInput.value,
   });
-
   const signBytes = SignDoc.encode(signDoc).finish();
   const signBytesHex = "0x" + encodeHex(signBytes);
 
+  // request accounts from metamask
   const accounts = await ethereum.request({
     method: 'eth_requestAccounts',
   });
 
+  // request signature from metamask
   const sigHex = await ethereum.request({
     method: "personal_sign",
     params: [signBytesHex, accounts[0]],
   });
 
-  const sigBytes = decodeHex(sigHex);
-  const r = sigBytes.slice(0, 32);
-  const s = sigBytes.slice(32, 64);
-  const v = sigBytes[64];
-
-  const cred = {
-    r: new BN(r, 32, "be").toString(),
-    s: new BN(s, 32, "be").toString(),
-    v,
-  };
-
   const tx = Tx.fromPartial({
     body,
     authInfo,
-    signatures: [encodeJson(cred)],
+    signatures: [decodeHex(sigHex)],
   });
 
-  const client = await StargateClient.connect(rpcEndpoint);
-
   try {
+    const client = await StargateClient.connect(rpcEndpoint);
     const txhash = await client.broadcastTxSync(Tx.encode(tx).finish());
     resultDiv.innerHTML = txhash;
   } catch (err) {
