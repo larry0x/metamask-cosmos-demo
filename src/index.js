@@ -4,6 +4,7 @@ import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { AuthInfo, SignDoc, SignerInfo } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { bech32 } from "bech32";
+import { Tx } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 const fromAddrInput = document.getElementById("fromAddr");
 const toAddrInput = document.getElementById("toAddr");
@@ -21,7 +22,20 @@ function addressBytesFromBech32(str) {
   return bech32.fromWords(words);
 }
 
-submitBtn.addEventListener("click", async function () {
+function encodeHex(bytes) {
+  return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function decodeHex(hex) {
+  if (hex.startsWith("0x")) {
+    hex = hex.slice(2);
+  }
+  return Uint8Array.from(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+}
+
+submitBtn.addEventListener("click", async function (event) {
+  event.preventDefault();
+
   // interface registry - used to encode protobuf types
   const registry = new Registry(defaultRegistryTypes);
 
@@ -85,4 +99,20 @@ submitBtn.addEventListener("click", async function () {
   });
 
   const signBytes = SignDoc.encode(signDoc).finish();
+  const signBytesHex = "0x" + encodeHex(signBytes);
+
+  const accounts = await ethereum.request({
+    method: 'eth_requestAccounts',
+  });
+
+  const sigHex = await ethereum.request({
+    method: "personal_sign",
+    params: [signBytesHex, accounts[0]],
+  });
+
+  const tx = Tx.fromPartial({
+    body,
+    authInfo,
+    signatures: [decodeHex(sigHex)],
+  });
 });
