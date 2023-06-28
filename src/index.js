@@ -23,12 +23,12 @@ function addressBytesFromBech32(str) {
   return bech32.fromWords(words);
 }
 
-function encodeHex(bytes) {
-  return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function encodeJson(obj) {
   return new TextEncoder().encode(JSON.stringify(obj));
+}
+
+function encodeHex(bytes) {
+  return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function decodeHex(hex) {
